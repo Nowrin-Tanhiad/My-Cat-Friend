@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gumball Kitty</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#ffe3ee;--bg2:#fff4f8;--ink:#5a3a4a;--pink:#ff8fb5;--pink2:#ffc2d9;--card:#ffffffcc;--line:#7a4a5c;--shadow:#ff8fb540;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#3a2231;--bg2:#2a1824;--ink:#ffe3ee;--card:#4a2c3d cc;--card:#4a2c3dcc;--shadow:#00000040}}
+:root[data-theme="dark"]{--bg1:#3a2231;--bg2:#2a1824;--ink:#ffe3ee;--card:#4a2c3dcc;--shadow:#00000040}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:'Fredoka','Trebuchet MS',sans-serif;color:var(--ink);background:radial-gradient(circle at 20% 10%,var(--bg1),var(--bg2) 70%);min-height:100vh;overflow-x:hidden}
+.hearts{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.hearts span{position:absolute;bottom:-30px;opacity:.5;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-110vh) rotate(20deg);opacity:0}}
+main{position:relative;max-width:760px;margin:0 auto;padding:28px 18px 40px;text-align:center}
+h1{font-size:clamp(30px,7vw,46px);margin:6px 0 4px;font-weight:600}
+p.sub{margin:0 0 22px;font-size:18px;opacity:.85}
+.screen{display:none}.screen.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px}
+.pick{background:var(--card);border:3px solid transparent;border-radius:28px;padding:10px 6px 12px;cursor:pointer;font:inherit;color:inherit;box-shadow:0 6px 0 var(--shadow);transition:transform .15s}
+.pick:hover,.pick:focus-visible{transform:translateY(-4px) rotate(-2deg);border-color:var(--pink);outline:none}
+.pick svg{width:100%;height:auto;display:block}
+.pick b{font-weight:500;font-size:15px}
+.big{width:190px;margin:0 auto 10px;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+input{font:inherit;font-size:22px;text-align:center;padding:12px 18px;border-radius:999px;border:3px solid var(--pink);background:var(--card);color:var(--ink);width:min(320px,90%)}
+input:focus{outline:3px solid var(--pink2)}
+.btn{font:inherit;font-weight:600;font-size:19px;color:#fff;background:var(--pink);border:0;border-radius:999px;padding:12px 30px;margin:14px 6px 0;cursor:pointer;box-shadow:0 6px 0 #e0709a;transition:transform .1s}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #e0709a}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none;border:2px dashed var(--pink)}
+.stage{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:center;gap:10px 28px}
+.catbox{width:200px;position:relative}
+.catbox .big{width:170px}
+.bubble{position:relative;background:var(--card);border:3px solid var(--pink);border-radius:26px;padding:14px 16px;min-height:92px;margin-bottom:14px;font-size:18px;line-height:1.35;box-shadow:0 6px 0 var(--shadow)}
+.bubble::after{content:"";position:absolute;bottom:-14px;left:50%;margin-left:-10px;border:10px solid transparent;border-top-color:var(--pink);border-bottom:0}
+.bubble.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.bubble i{display:block;font-family:'Caveat',cursive;font-style:normal;font-size:22px;margin-top:6px;color:var(--pink)}
+.machine{position:relative;width:250px;padding-bottom:70px}
+#m{width:100%;cursor:pointer;display:block;-webkit-tap-highlight-color:transparent}
+#m:focus-visible{outline:3px solid var(--pink);border-radius:20px}
+#m.shake{animation:shake .7s}
+@keyframes shake{10%,50%,90%{transform:rotate(-5deg) translateX(-4px)}30%,70%{transform:rotate(5deg) translateX(4px)}}
+#knob{transform-box:fill-box;transform-origin:center;transition:transform .7s}
+#m.shake #knob{transform:rotate(360deg)}
+.ball{position:absolute;left:50%;top:80%;width:46px;height:46px;margin-left:-23px;border-radius:50%;opacity:0;pointer-events:none;box-shadow:inset -6px -8px 0 #0000001a}
+.ball.drop{animation:drop 1s cubic-bezier(.4,0,.6,1) forwards}
+@keyframes drop{0%{opacity:1;transform:translateY(-6px) scale(.5)}45%{opacity:1;transform:translateY(60px) scale(1)}60%{opacity:1;transform:translateY(42px)}75%,100%{opacity:1;transform:translateY(60px)}}
+.ball.burst{animation:burst .4s forwards}
+@keyframes burst{from{opacity:1;transform:translateY(60px) scale(1)}to{opacity:0;transform:translateY(60px) scale(2)}}
+.hint{font-size:16px;opacity:.8;margin-top:4px}
+.count{margin-top:16px;font-size:16px}
+.spark{position:fixed;pointer-events:none;font-size:22px;animation:fly .9s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+.menu{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:10px 0 6px}
+.opt{font:inherit;color:inherit;background:var(--card);border:3px solid var(--pink);border-radius:28px;padding:18px 22px;width:210px;cursor:pointer;box-shadow:0 6px 0 var(--shadow);display:flex;flex-direction:column;gap:4px;transition:transform .15s}
+.opt:hover,.opt:focus-visible{transform:translateY(-4px) rotate(-2deg);outline:none}
+.opt span{font-size:36px}.opt b{font-size:22px;font-weight:600}.opt small{font-size:15px;opacity:.8}
+.board{display:grid;grid-template-columns:repeat(3,88px);gap:10px;justify-content:center}
+.cell{width:88px;height:88px;font-size:42px;border-radius:24px;border:3px solid var(--pink);background:var(--card);cursor:pointer;box-shadow:0 5px 0 var(--shadow);padding:0}
+.cell.win{background:var(--pink2)}
+.cell:disabled{cursor:default;color:inherit}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#5a3a4a99;padding:20px;z-index:50}
+.modal.on{display:flex}
+.card{background:var(--bg2);color:var(--ink);border:4px solid var(--pink);border-radius:32px;padding:22px;max-width:360px;width:100%;text-align:center;animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+.card .big{width:130px}
+.card h2{margin:4px 0;font-size:24px;font-weight:600}
+.card p{font-size:21px;line-height:1.35;margin:6px 0}
+.card i{font-family:'Caveat',cursive;font-style:normal;font-size:26px;color:var(--pink)}
+.ball.ready{pointer-events:auto;cursor:pointer}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition:none!important}.hearts{display:none}}
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts" aria-hidden="true"></div>
+<main>
+  <section class="screen on" id="s1">
+    <h1>Pick your kitty ♡</h1>
+    <p class="sub">Who will keep you company today?</p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="screen" id="s2">
+    <div class="bubble" style="max-width:340px;margin:0 auto 22px">Hi! I’m going to be your friend. What’s your name?</div>
+    <div class="big" id="bigcat"></div>
+    <input id="name" maxlength="14" placeholder="Your name" autocomplete="off" aria-label="Your name">
+    <div>
+      <button class="btn ghost" id="back1">Change cat</button>
+      <button class="btn" id="go">Say hi</button>
+    </div>
+  </section>
+
+  <section class="screen" id="sm">
+    <h1 id="mt">Hi, friend!</h1>
+    <div class="bubble" id="mbub" style="max-width:340px;margin:0 auto 22px"></div>
+    <div class="big" id="cat2"></div>
+    <div class="menu">
+      <button class="opt" id="optT"><span>🐾 🍖</span><b>Paw &amp; Meat</b><small>Tic-tac-toe with me</small></button>
+      <button class="opt" id="optG"><span>🍬</span><b>Gumball</b><small>Press the machine</small></button>
+    </div>
+    <button class="btn ghost" id="back0">Change cat</button>
+  </section>
+
+  <section class="screen" id="st">
+    <h1>Paw &amp; Meat</h1>
+    <div class="stage">
+      <div class="catbox">
+        <div class="bubble" id="tb" aria-live="polite"></div>
+        <div class="big" id="cat4"></div>
+      </div>
+      <div><div class="board" id="board"></div><div class="count" id="score"></div></div>
+    </div>
+    <button class="btn" id="again">Play again</button>
+    <button class="btn ghost" id="back3">Back to menu</button>
+  </section>
+
+  <section class="screen" id="s3">
+    <h1 id="title">Gumball time!</h1>
+    <p class="sub">Press the machine to get a gumball.</p>
+    <div class="stage">
+      <div class="catbox">
+        <div class="bubble" id="bubble" aria-live="polite">Hi! Tap the machine and I’ll read your gumball.</div>
+        <div class="big" id="cat3"></div>
+      </div>
+      <div class="machine">
+        <svg id="m" viewBox="0 0 240 330" role="button" tabindex="0" aria-label="Gumball machine, tap to get a gumball">
+          <ellipse cx="120" cy="322" rx="90" ry="7" fill="#00000018"/>
+          <rect x="96" y="14" width="48" height="22" rx="11" fill="#ff8fb5" stroke="#7a4a5c" stroke-width="5"/>
+          <circle cx="120" cy="120" r="88" fill="#ffffffaa" stroke="#7a4a5c" stroke-width="6"/>
+          <g id="balls"></g>
+          <path d="M96 62q-18 14-26 38" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none" opacity=".8"/>
+          <path d="M82 214h76l16 100H66z" fill="#ff8fb5" stroke="#7a4a5c" stroke-width="6" stroke-linejoin="round"/>
+          <rect x="70" y="204" width="100" height="22" rx="8" fill="#ff6fa0" stroke="#7a4a5c" stroke-width="5"/>
+          <rect x="92" y="262" width="56" height="36" rx="18" fill="#a8e6df" stroke="#7a4a5c" stroke-width="5"/>
+          <ellipse id="knob" cx="170" cy="258" rx="11" ry="17" fill="#fff3a0" stroke="#7a4a5c" stroke-width="4"/>
+          <text x="120" y="248" text-anchor="middle" font-size="13" fill="#fff" font-family="Fredoka,sans-serif" font-weight="600">5 cents ♡</text>
+        </svg>
+        <div class="ball" id="ball"></div>
+      </div>
+    </div>
+    <div class="hint">Every gumball holds a little pep talk.</div>
+    <div class="count" id="count">Gumballs collected: 0</div>
+    <button class="btn ghost" id="back2">Back to menu</button>
+  </section>
+</main>
+<div class="modal" id="modal"><div class="card" role="dialog" aria-modal="true" aria-labelledby="mh">
+  <div class="big" id="mcat"></div>
+  <h2 id="mh"></h2>
+  <p id="mmsg"></p>
+  <i id="msig"></i>
+  <div><button class="btn" id="mok">Thank you!</button></div>
+</div></div>
+
+<script>
+(function(){
+var OUT='#4a3340';
+var CATS=[
+ {id:'frog',label:'Froggy'},{id:'strawberry',label:'Berry'},{id:'blueberry',label:'Blueberry'},{id:'fish',label:'Fishy'},
+ {id:'shark',label:'Sharky'},{id:'blanket',label:'Cozy'},{id:'phones',label:'Beats'},{id:'banana',label:'Nana'}
+];
+function cat(t){
+ var back='',front='',ears=true,body=true;
+ var seeds='';[[40,64],[80,60],[34,86],[86,88],[60,100],[50,50],[72,48]].forEach(function(p){seeds+='<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="1.8" ry="3" fill="#ffe9b0"/>'});
+ if(t=='strawberry'){body=false;back='<ellipse cx="60" cy="70" rx="46" ry="44" fill="#e8475f" stroke="'+OUT+'" stroke-width="3"/>'+seeds+'<path d="M60 26l-10-12 10 4 10-4zM60 28l-22-6 22 10zM60 28l22-6-22 10z" fill="#6bbf59" stroke="'+OUT+'" stroke-width="2.5" stroke-linejoin="round"/>'}
+ if(t=='blueberry'){body=false;back='<ellipse cx="60" cy="72" rx="46" ry="42" fill="#4a6a9a" stroke="'+OUT+'" stroke-width="3"/><path d="M44 32l6-16 6 10 4-12 4 12 6-10 6 16z" fill="#3b5683" stroke="'+OUT+'" stroke-width="2.5" stroke-linejoin="round"/>'}
+ if(t=='frog'){ears=false;front='<path d="M24 62Q22 24 60 24Q98 24 96 62Q60 46 24 62Z" fill="#a8cc6a" stroke="'+OUT+'" stroke-width="3"/><circle cx="38" cy="22" r="11" fill="#a8cc6a" stroke="'+OUT+'" stroke-width="3"/><circle cx="82" cy="22" r="11" fill="#a8cc6a" stroke="'+OUT+'" stroke-width="3"/><circle cx="38" cy="22" r="4.5" fill="'+OUT+'"/><circle cx="82" cy="22" r="4.5" fill="'+OUT+'"/><path d="M54 40q6 5 12 0" stroke="'+OUT+'" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}
+ if(t=='shark'){ears=false;back='<path d="M92 92l22-8-6 20z" fill="#7d9bb3" stroke="'+OUT+'" stroke-width="3" stroke-linejoin="round"/>';front='<path d="M24 62Q22 26 60 26Q98 26 96 62L84 54L76 60L68 52L60 60L52 52L44 60L36 54Z" fill="#7d9bb3" stroke="'+OUT+'" stroke-width="3" stroke-linejoin="round"/><path d="M52 28L62 2L74 28Z" fill="#7d9bb3" stroke="'+OUT+'" stroke-width="3" stroke-linejoin="round"/><circle cx="46" cy="38" r="3" fill="'+OUT+'"/><circle cx="76" cy="38" r="3" fill="'+OUT+'"/>'}
+ if(t=='banana'){ears=false;back='<path d="M22 96Q16 56 52 30L66 22Q100 40 98 96Z" fill="#f2d24f" stroke="'+OUT+'" stroke-width="3"/><rect x="54" y="10" width="14" height="14" rx="3" fill="#7b5a3a" stroke="'+OUT+'" stroke-width="2.5"/>'}
+ if(t=='blanket'){front='<path d="M14 116Q16 84 38 86L82 86Q106 84 108 116Z" fill="#6c9be0" stroke="'+OUT+'" stroke-width="3" stroke-linejoin="round"/><path d="M34 92Q60 104 88 94" stroke="#a9c7f2" stroke-width="4" fill="none" stroke-linecap="round"/>'}
+ if(t=='phones'){front='<path d="M22 60Q20 14 60 14Q100 14 98 60" stroke="#8a8a96" stroke-width="7" fill="none" stroke-linecap="round"/><rect x="12" y="50" width="16" height="28" rx="8" fill="#9a9aa8" stroke="'+OUT+'" stroke-width="3"/><rect x="92" y="50" width="16" height="28" rx="8" fill="#9a9aa8" stroke="'+OUT+'" stroke-width="3"/>'}
+ if(t=='fish'){front='<ellipse cx="60" cy="86" rx="15" ry="9" fill="#6fb4d8" stroke="'+OUT+'" stroke-width="2.5"/><path d="M74 86l11-7v14z" fill="#6fb4d8" stroke="'+OUT+'" stroke-width="2.5" stroke-linejoin="round"/><circle cx="52" cy="84" r="1.8" fill="'+OUT+'"/>'}
+ var s='<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">'+back;
+ if(body)s+='<ellipse cx="60" cy="102" rx="24" ry="14" fill="#fff" stroke="'+OUT+'" stroke-width="3"/><ellipse cx="44" cy="114" rx="8" ry="4" fill="#fff" stroke="'+OUT+'" stroke-width="2.5"/><ellipse cx="76" cy="114" rx="8" ry="4" fill="#fff" stroke="'+OUT+'" stroke-width="2.5"/>';
+ if(ears)s+='<path d="M28 52L30 22L54 38Z" fill="#fff" stroke="'+OUT+'" stroke-width="3" stroke-linejoin="round"/><path d="M92 52L90 22L66 38Z" fill="#fff" stroke="'+OUT+'" stroke-width="3" stroke-linejoin="round"/>';
+ s+='<ellipse cx="60" cy="62" rx="35" ry="28" fill="#fff" stroke="'+OUT+'" stroke-width="3"/>';
+ s+='<path d="M54 38v8M60 37v9M66 38v8" stroke="#c9b8a8" stroke-width="2.5" stroke-linecap="round"/>';
+ s+='<circle cx="45" cy="64" r="3.2" fill="'+OUT+'"/><circle cx="75" cy="64" r="3.2" fill="'+OUT+'"/>';
+ s+='<ellipse cx="36" cy="72" rx="6" ry="4" fill="#ffb3c6"/><ellipse cx="84" cy="72" rx="6" ry="4" fill="#ffb3c6"/>';
+ s+='<path d="M54 69q3 5 6 0q3 5 6 0" stroke="'+OUT+'" stroke-width="2.4" fill="none" stroke-linecap="round"/>';
+ s+='<path d="M22 62l-9-2M22 68l-9 3M98 62l9-2M98 68l9 3" stroke="'+OUT+'" stroke-width="2" stroke-linecap="round"/>';
+ return s+front+'</svg>';
+}
+var MSG=[
+ "You’re doing better than you think. Keep going!",
+ "Small steps still count. One more today!",
+ "Your ideas matter, so say them out loud.",
+ "Rest if you need to, then try again. You’ve got this.",
+ "Mistakes mean you’re learning. Be proud of that.",
+ "Someone out there is so glad you exist.",
+ "Today’s hard thing becomes tomorrow’s easy thing.",
+ "You are allowed to take up space and shine.",
+ "Drink some water, stretch, and be kind to yourself.",
+ "Bug in your code? Not in your worth. You’ll fix it!",
+ "Your creativity is your superpower. Use it today.",
+ "Progress, not perfection. I’m cheering for you!",
+ "You’ve survived every bad day so far. That’s a 100% record.",
+ "Be gentle with yourself. You’re growing.",
+ "Big dreams start with tiny, sweet beginnings.",
+ "You’re braver than the scary thing in front of you.",
+ "Go make something lovely today. The world needs it.",
+ "It’s okay to ask for help. That’s strength, too.",
+ "You are loved, even on the messy days.",
+ "Take a deep breath. You’re right where you need to be.",
+ "Your hard work will bloom. Keep watering it.",
+ "You make ordinary days brighter just by showing up.",
+ "Finish one thing, then celebrate it with a snack!",
+ "You’re a whole gumball machine of potential."
+];
+var COL=['#ff8fb5','#ffe27a','#9ee3da','#c8b2f0','#ffb38a','#ffffff','#8fc7ff'];
+var $=function(i){return document.getElementById(i)};
+var pick='frog',cn='Froggy',nm='friend',bag=[],n=0,busy=false;
+
+// background hearts
+var h=$('hearts');for(var i=0;i<14;i++){var e=document.createElement('span');e.textContent=['♡','♥','✿'][i%3];e.style.left=(Math.random()*100)+'%';e.style.fontSize=(14+Math.random()*22)+'px';e.style.color='#ff8fb5';e.style.animationDuration=(9+Math.random()*10)+'s';e.style.animationDelay=(-Math.random()*14)+'s';h.appendChild(e)}
+
+// cat grid
+var g=$('grid');
+CATS.forEach(function(c){var b=document.createElement('button');b.className='pick';b.innerHTML=cat(c.id)+'<b>'+c.label+'</b>';b.setAttribute('aria-label','Choose '+c.label);b.onclick=function(){pick=c.id;cn=c.label;$('bigcat').innerHTML=cat(pick);show('s2');setTimeout(function(){$('name').focus()},50)};g.appendChild(b)});
+
+// gumballs inside globe
+var bs='',pos=[[80,170],[110,176],[140,172],[96,152],[126,154],[156,150],[70,150],[112,134],[144,132],[86,130]];
+pos.forEach(function(p,i){bs+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="14" fill="'+COL[i%COL.length]+'" stroke="#7a4a5c" stroke-width="3"/><path d="M'+(p[0]-7)+' '+(p[1]-5)+'q4-6 9-6" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>'});
+bs+='<path d="M92 92c-14-14 6-30 14-14c8-16 28 0 14 14l-14 14z" fill="#ffb3cf" stroke="#7a4a5c" stroke-width="3" stroke-linejoin="round"/><path d="M138 70c-10-10 4-22 10-10c6-12 20 0 10 10l-10 10z" fill="#ffc9dc" stroke="#7a4a5c" stroke-width="3" stroke-linejoin="round"/>';
+$('balls').innerHTML=bs;
+
+function show(id){['s1','s2','sm','s3','st'].forEach(function(s){$(s).classList.toggle('on',s==id)})}
+function start(){nm=($('name').value||'').trim()||'friend';$('mt').textContent='Hi, '+nm+'!';$('cat2').innerHTML=cat(pick);$('mbub').textContent='I’m '+cn+', your friend! What should we do?';show('sm')}
+$('go').onclick=start;
+$('name').onkeydown=function(e){if(e.key=='Enter')start()};
+$('back1').onclick=function(){show('s1')};
+$('back0').onclick=function(){show('s1')};
+$('back2').onclick=function(){show('sm')};
+$('back3').onclick=function(){show('sm')};
+$('optG').onclick=function(){$('cat3').innerHTML=cat(pick);$('bubble').textContent='Press the machine!';busy=false;$('ball').className='ball';show('s3')};
+$('optT').onclick=function(){$('cat4').innerHTML=cat(pick);reset();score();show('st')};
+
+// tic-tac-toe: you are paw, the cat is meat
+var bd=[],over=false,sc={p:0,c:0};
+var L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+var bo=$('board');
+for(var k=0;k<9;k++){(function(i){var c=document.createElement('button');c.className='cell';c.setAttribute('aria-label','Square '+(i+1));c.onclick=function(){play(i)};bo.appendChild(c)})(k)}
+function say(t){$('tb').textContent=t}
+function score(){$('score').textContent=nm+' 🐾 '+sc.p+'  |  '+cn+' 🍖 '+sc.c}
+function draw(){var cs=bo.children;for(var i=0;i<9;i++){cs[i].textContent=bd[i]=='p'?'🐾':bd[i]=='c'?'🍖':'';cs[i].disabled=over||!!bd[i]}}
+function reset(){bd=['','','','','','','','',''];over=false;for(var i=0;i<9;i++)bo.children[i].classList.remove('win');draw();say('Your turn, '+nm+'! You’re 🐾 and I’m 🍖.')}
+function fin(){var w=null;L.forEach(function(l){if(bd[l[0]]&&bd[l[0]]==bd[l[1]]&&bd[l[0]]==bd[l[2]])w=l});
+ if(w){over=true;w.forEach(function(i){bo.children[i].classList.add('win')});if(bd[w[0]]=='p'){sc.p++;say('You won, '+nm+'! So proud of you! 🐾')}else{sc.c++;say('Yum, the meat wins! Rematch?')}}
+ else if(bd.join('').length==9){over=true;say('A tie! We’re equally clever.')}
+ else return false;
+ score();draw();return true}
+function find(who){for(var i=0;i<8;i++){var l=L[i],v=[bd[l[0]],bd[l[1]],bd[l[2]]],e=v.indexOf('');if(e>-1&&v.filter(function(x){return x==who}).length==2)return l[e]}return -1}
+function pickMove(){var em=[];for(var i=0;i<9;i++)if(!bd[i])em.push(i);
+ if(Math.random()<.75){var m=find('c');if(m<0)m=find('p');if(m<0&&!bd[4])m=4;if(m<0){var cr=[0,2,6,8].filter(function(i){return !bd[i]});if(cr.length)m=cr[Math.floor(Math.random()*cr.length)]}if(m>=0)return m}
+ return em[Math.floor(Math.random()*em.length)]}
+function play(i){if(over||bd[i])return;bd[i]='p';draw();if(fin())return;say('Hmm, let me think…');over=true;draw();
+ setTimeout(function(){over=false;bd[pickMove()]='c';if(!fin()){draw();say('Your turn, '+nm+'!')}},600)}
+$('again').onclick=reset;
+
+// gumball: tap the dropped ball to open the message
+$('ball').onclick=function(){var b=$('ball');if(!b.classList.contains('ready'))return;b.classList.remove('drop','ready');b.classList.add('burst');var r=b.getBoundingClientRect();sparkles(r.left+23,r.top+23);
+ $('mcat').innerHTML=cat(pick);$('mh').textContent='For you, '+nm+' ♡';$('mmsg').textContent=next();$('msig').textContent='love, '+cn+' ♡';$('modal').classList.add('on');$('mok').focus()};
+$('mok').onclick=function(){$('modal').classList.remove('on');n++;$('count').textContent='Gumballs collected: '+n;$('bubble').textContent='Press the machine for another one!';busy=false};
+
+function sparkles(x,y){for(var i=0;i<9;i++){var s=document.createElement('div');s.className='spark';s.textContent=['♡','✨','♥','★'][i%4];s.style.left=x+'px';s.style.top=y+'px';s.style.color=COL[i%COL.length];var a=Math.PI*2*i/9;s.style.setProperty('--dx',Math.cos(a)*70+'px');s.style.setProperty('--dy',Math.sin(a)*70+'px');document.body.appendChild(s);setTimeout(function(el){el.remove()},950,s)}}
+
+function next(){if(!bag.length){bag=MSG.map(function(_,i){return i});for(var i=bag.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=bag[i];bag[i]=bag[j];bag[j]=t}}return MSG[bag.pop()]}
+
+function turn(){
+ if(busy)return;busy=true;
+ var m=$('m'),b=$('ball');
+ b.className='ball';b.style.background='radial-gradient(circle at 30% 28%,#fff9,transparent 38%),'+COL[Math.floor(Math.random()*COL.length)];
+ m.classList.add('shake');
+ setTimeout(function(){m.classList.remove('shake');void b.offsetWidth;b.classList.add('drop')},700);
+ setTimeout(function(){
+  b.classList.add('ready');
+  $('bubble').textContent='Now tap the gumball, '+nm+'!';
+ },1750);
+}
+$('m').onclick=turn;
+$('m').onkeydown=function(e){if(e.key=='Enter'||e.key==' '){e.preventDefault();turn()}};
+})();
+</script>
+</body>
+</html>
